@@ -1,74 +1,42 @@
-# Custom MCP Server for Databricks
+# Multi-MCP Agent Endpoint
 
-Custom Model Context Protocol (MCP) server with OBO (On-Behalf-Of) authentication, designed for deployment as a Databricks app.
+A Databricks Model Serving endpoint that orchestrates across both managed Databricks tools and custom MCP servers to provide intelligent assistance.
 
-## Features
+## What it does
 
-The server implements three MCP tools:
+This endpoint combines multiple tool sources into a single conversational agent:
 
-- **test_connection**: Test server connectivity and OBO authentication status
-- **echo**: Echo back a message (useful for testing basic functionality)
-- **get_user_info**: Retrieve current user information via OBO authentication
+**Managed Databricks Tools:**
+- `system__ai__python_exec` - Execute Python code using Databricks Unity Catalog
 
-## Authentication
+**Custom MCP Server Tools:**
+- `test_connection` - Test MCP server connectivity
+- `echo` - Echo text for testing
+- `get_user_info` - Get user information
 
-This server uses Databricks OBO (On-Behalf-Of) authentication with `ModelServingUserCredentials`, allowing it to act on behalf of the authenticated user making requests.
+The agent can use any combination of these tools to respond to user requests through natural conversation.
 
-## Deployment to Databricks
+## Current Deployment
 
-### Prerequisites
+- **Model:** `kat_savchyn.ai.kat_multi_mcp` (version 4)
+- **Endpoint:** `agents_kat_savchyn-ai-kat_multi_mcp`
+- **LLM:** Claude 3.5 Sonnet
+- **Profile:** e2-demo
 
-1. Install Databricks CLI
-2. Authenticate to your workspace:
-   ```bash
-   databricks auth login --host https://<your-workspace-hostname>
-   ```
+## Files
 
-### Deploy Steps
+- `mcp_agent.py` - Main agent implementation
+- `deploy_mcp_agent.py` - Deployment script
+- `external_mcp_client.py` - Client for custom MCP servers
+- `test_mcp_server_conn.py` - Connection testing
 
-1. Create the Databricks app:
-   ```bash
-   databricks apps create mcp-cust-kat
-   ```
+## Quick Deploy
 
-2. Upload and deploy:
-   ```bash
-   DATABRICKS_USERNAME=$(databricks current-user me | jq -r .userName)
-   databricks sync . "/Users/$DATABRICKS_USERNAME/mcp-cust-kat"
-   databricks apps deploy mcp-cust-kat --source-code-path "/Workspace/Users/$DATABRICKS_USERNAME/mcp-cust-kat"
-   ```
-
-3. Access your app:
-   - The app URL will be available in the Databricks UI
-   - MCP endpoint: `https://<app-url>/mcp`
-   - Health check: `https://<app-url>/health`
-
-## API Endpoints
-
-- **GET /** - Root endpoint with server information
-- **GET /health** - Health check endpoint with OBO authentication status
-- **POST /mcp** - Main MCP JSON-RPC endpoint
-
-## Testing the Server
-
-Once deployed, you can test the connection using the available MCP tools:
-
-1. **test_connection**: Verifies the server is running and shows OBO authentication status
-2. **echo**: Simple echo test to verify request/response functionality
-3. **get_user_info**: Returns detailed information about the authenticated user
-
-## Local Development
-
-Run locally for testing:
 ```bash
-uv run python server.py
+source venv_py310/bin/activate
+python deploy_mcp_agent.py
 ```
 
-The server will start on port 8000 with both HTTP and MCP protocol support.
+## Usage
 
-## Project Structure
-
-- `server.py` - Main FastAPI application with MCP protocol implementation
-- `app.yaml` - Databricks app configuration
-- `pyproject.toml` - Python project configuration and dependencies
-- `requirements.txt` - Direct dependencies for the application
+Send requests to the endpoint with natural language that can trigger any combination of the available tools. The agent will automatically orchestrate across managed and custom tools as needed.
