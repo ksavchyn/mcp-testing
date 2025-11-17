@@ -1,0 +1,4 @@
+uv
+fastapi
+uvicorn
+databricks-sdk
