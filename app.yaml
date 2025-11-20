@@ -1,8 +1,0 @@
-command: [
-    'uv',
-    'run',
-    'custom-server'
-]
-env:
-  - name: "PORT"
-    value: "8000"

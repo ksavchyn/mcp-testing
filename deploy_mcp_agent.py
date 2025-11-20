@@ -11,7 +11,8 @@ from mlflow.models.auth_policy import AuthPolicy, UserAuthPolicy, SystemAuthPoli
 from mlflow.models.resources import DatabricksServingEndpoint, DatabricksFunction, DatabricksApp
 
 # Configuration
-AGENT_MODEL_NAME = "kat_savchyn.ai.kat_multi_mcp"  # Custom MLflow deployment
+#AGENT_MODEL_NAME = "kat_savchyn.ai.kat_multi_mcp"  # Custom MLflow deployment
+AGENT_MODEL_NAME = "kat_savchyn.ai.andrew-test-dxc-clean"
 AGENT_DESCRIPTION = "MCP Agent with Databricks Unity Catalog and custom mcp server tools"
 DATABRICKS_CLI_PROFILE = "e2-demo"
 
@@ -26,6 +27,7 @@ CUSTOM_MCP_SERVER_URLS = [
     "https://mcp-cust-kat-1444828305810485.aws.databricksapps.com/mcp",
 ]
 
+
 def register_agent():
     """Register the MCP agent model in Unity Catalog"""
     print("🔄 Registering MCP agent model...")
@@ -39,7 +41,8 @@ def register_agent():
     # Set MLflow tracking exactly like the official docs
     mlflow.set_tracking_uri(f"databricks://{DATABRICKS_CLI_PROFILE}")
     mlflow.set_registry_uri(f"databricks-uc://{DATABRICKS_CLI_PROFILE}")
-    mlflow.set_experiment(f"/Users/{current_user}/kat_custom_mcp_agent_experiment")
+    #mlflow.set_experiment(f"/Users/{current_user}/kat_custom_mcp_agent_experiment")
+    mlflow.set_experiment(f"/Users/{current_user}/mcp_agent_experiment")
     os.environ["DATABRICKS_CONFIG_PROFILE"] = DATABRICKS_CLI_PROFILE
 
     with mlflow.start_run():
@@ -81,7 +84,7 @@ def register_agent():
                     ]
                 }
             ],
-            "name": "kat-mcp-env"
+            "name": "mlflow-env"
         }
 
         # Configure authentication policy with both system and user auth
